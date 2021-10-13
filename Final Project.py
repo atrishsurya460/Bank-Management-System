@@ -1,3 +1,6 @@
+# Admin - 2001 James
+# User - 2006 Simona
+
 import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd
@@ -23,6 +26,7 @@ while tf.casefold() != 'e':
             t = u_df.loc[index1, 'type']
             if (i == u_id) & (f.casefold() == first_name) & (t == 'A'):
                 print("Login successful!")
+                choice = -1
                 while choice != 13:
                     print()
                     print("*****************Admin Menu*****************")
@@ -49,14 +53,15 @@ while tf.casefold() != 'e':
                         print(p_df)
                         print()
                         print("********************************************")
+                        temp = input("Press 'C' key;")
                     elif choice == 2:
                         p_df = pd.read_csv("Product.csv")
-                        for category in sorted(list(set(p_df['category']))):
+                        for category in p_df.category.unique():
                             print(category)
-                        c_choice = str(input("\nEnter your preferred category: "))
+                        c_choice = input("\nEnter your preferred category: ").casefold()
                         print("Displaying product menu from a specific category....\n")
                         for index6 in p_df.index:
-                            if c_choice.casefold() == p_df.loc[index6, 'category'].casefold():
+                            if c_choice == p_df.loc[index6, 'category']:
                                 print(p_df.loc[index6, 'id_no':'category'])
                         print()
                         print("********************************************")
@@ -87,7 +92,9 @@ while tf.casefold() != 'e':
                         total = len(p_df)
                         print("Total No. Of Products: {}". format(total))
                         id_no = int(input("Enter ID of product to be removed: "))
-                        if id_no in p_df.id_no:
+                        print(type(p_df.id_no.astype(int)))
+                        # todo Correct This
+                        if id_no in pd.to_numeric(p_df.id_no):
                             print("Removing product.....")
                             p_df.drop(id_no, axis=0, inplace=True)
                             print("Product removed!")
@@ -97,6 +104,8 @@ while tf.casefold() != 'e':
                             #p_df.to_csv("Product.csv")
                         else:
                             print("Oops! Wrong details.")
+
+                    # todo Add ability to only edit an single column
                     elif choice == 5:
                         p_df = pd.read_csv("Product.csv")
                         id_no = int(input("Enter the ID no. of the product to be edited: "))
@@ -256,7 +265,8 @@ while tf.casefold() != 'e':
             a = u_df.loc[index4, 'type']
             if (i == u_id) & (f.casefold() == first_name.casefold()) & (a == 'U'):
                 print("Login successful!")
-                while choice != 4:
+                choice = -5
+                while choice != 5:
                     print("******************User Menu******************")
                     print()
                     print("1. Display Product Menu")
