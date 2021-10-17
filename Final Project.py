@@ -81,13 +81,12 @@ while tf.casefold() != 'e':
                                                'original_price': o_price, 'category': category},
                                          index=['name', 'available', 'price', 'original_price', 'category'],
                                          name=row)
-                        # temp.rename(total + 1001)
                         p_df = p_df.append(temp)
                         print("Product added!")
                         total = len(p_df)
                         print("Total No. Of Products: {}". format(total))
                         print(p_df)
-                        # p_df.to_csv("Product.csv")
+                        p_df.to_csv("Product.csv")
                         print()
                         print("********************************************")
                         temp = input("Press 'C' key...")
@@ -106,7 +105,7 @@ while tf.casefold() != 'e':
                             total = len(p_df)
                             print("Total No. Of Products: {}". format(total))
                             print(p_df)
-                            # p_df.to_csv("Product.csv")
+                            p_df.to_csv("Product.csv")
                         else:
                             print("Oops! Wrong details.")
                         print()
@@ -131,7 +130,7 @@ while tf.casefold() != 'e':
                                         break
                                 print("Product details edited!")
                                 print(p_df.loc[index2, :])
-                                # p_df.to_csv("Product.csv")
+                                p_df.to_csv("Product.csv")
                                 break
                         else:
                             print("Oops! Wrong details.")
@@ -174,7 +173,6 @@ while tf.casefold() != 'e':
                         phone2 = input("2nd Phone No.: ")
                         email = input("Email Address: ")
                         web = input("Website(if any): ")
-                        # id_no = u_df["id_no"].max()
                         print("Adding customer.....")
                         row = total + 2001
                         temp = pd.Series(data={'type': u_type, 'first_name': first, 'last_name': last,
@@ -190,7 +188,7 @@ while tf.casefold() != 'e':
                         total = len(u_df)
                         print("Total No. Of Customers: {}". format(total))
                         print(u_df)
-                        # u_df.to_csv("Customers.csv")
+                        u_df.to_csv("Customers.csv")
                         print()
                         print("********************************************")
                         temp = input("Press 'C' key...")
@@ -209,7 +207,7 @@ while tf.casefold() != 'e':
                             total = len(u_df)
                             print("Total No. Of Customers: {}". format(total))
                             print(u_df)
-                            # u_df.to_csv("Customers.csv")
+                            u_df.to_csv("Customers.csv")
                         else:
                             print("Oops! Wrong details.")
                         print()
@@ -235,7 +233,7 @@ while tf.casefold() != 'e':
                                         break
                                 print("Customer details edited!")
                                 print(u_df.loc[index2, :])
-                                # u_df.to_csv("Customers.csv")
+                                u_df.to_csv("Customers.csv")
                                 break
                         else:
                             print("Oops! Wrong details.")
@@ -325,7 +323,8 @@ while tf.casefold() != 'e':
                                 u_df.loc[index, 'latest_order'] = str("#{}#{}".format(u_id, id_no))
                                 print("Product purchase added to user details!")
                                 print(u_df.loc[index, :])
-                                # u_df.to_csv("Customers.csv")
+                                u_df.to_csv("Customers.csv")
+                                p_df.to_csv("Product.csv")
                                 break
                         else:
                             print("Product id not found or stock empty for the chosen product!")
@@ -341,10 +340,11 @@ while tf.casefold() != 'e':
                                     u_df.loc[index, 'latest_order'] = ''
                                     print("Order cancelled!")
                                     print(p_df.loc[index, :])
-                                    # u_df.to_csv("C:\\Users\\user\\Downloads\\Customers.csv")
+                                    u_df.to_csv("Customers.csv")
+                                    p_df.to_csv("Product.csv")
                                     break
                         else:
-                            print("Product id not found or !")
+                            print("Product id not found or order not found in customer details!")
                         print()
                         print("********************************************")
                         temp = input("Press 'C' key...")
