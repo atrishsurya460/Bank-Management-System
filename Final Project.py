@@ -1,12 +1,15 @@
 # Admin - 2001 James
 # User - 2006 Simona
 
+# noinspection PyUnresolvedReferences
 import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd
 
 p_df = pd.read_csv("Product.csv")
+p_df.set_index("id_no", inplace=True)
 u_df = pd.read_csv("Customers.csv")
+u_df.set_index("id_no", inplace=True)
 
 print("*" * 46)
 print("\t\t\tOnline Shopping System")
@@ -14,17 +17,15 @@ print("*" * 46)
 print()
 
 tf = "-"
-choice = -1
 while tf.casefold() != 'e':
-    tf = str(input("Enter the type of user(A for admin, U for user) or press E to exit: "))
+    tf = input("Enter the type of user(A for admin, U for user) or press E to exit: ").casefold()
     if tf.casefold() == 'a':
         u_id = int(input("Enter your id: "))
-        first_name = str(input("Enter your first name: ")).casefold()
+        first_name = input("Enter your first name: ").casefold()
         for index1 in u_df.index:
-            i = u_df.loc[index1, 'id_no']
-            f = u_df.loc[index1, 'first_name']
-            t = u_df.loc[index1, 'type']
-            if (i == u_id) & (f.casefold() == first_name) & (t == 'A'):
+            first = u_df.loc[index1, 'first_name'].casefold()
+            u_type = u_df.loc[index1, 'type'].casefold()
+            if (index1 == u_id) & (first == first_name) & (u_type == tf):
                 print("Login successful!")
                 choice = -1
                 while choice != 13:
@@ -48,25 +49,24 @@ while tf.casefold() != 'e':
                     print()
                     choice = int(input("Enter your choice: "))
                     if choice == 1:
-                        p_df = pd.read_csv("Product.csv", index_col=0)
                         print("Displaying product menu....\n")
                         print(p_df)
                         print()
                         print("********************************************")
-                        temp = input("Press 'C' key;")
+                        temp = input("Press 'C' key...")
                     elif choice == 2:
-                        p_df = pd.read_csv("Product.csv")
                         for category in p_df.category.unique():
                             print(category)
                         c_choice = input("\nEnter your preferred category: ").casefold()
                         print("Displaying product menu from a specific category....\n")
-                        for index6 in p_df.index:
-                            if c_choice == p_df.loc[index6, 'category']:
-                                print(p_df.loc[index6, 'id_no':'category'])
+                        for index2 in p_df.index:
+                            if c_choice == p_df.loc[index2, 'category'].casefold():
+                                print(p_df.loc[index2, :])
+                                print()
                         print()
                         print("********************************************")
+                        temp = input("Press 'C' key...")
                     elif choice == 3:
-                        p_df = pd.read_csv("Product.csv")
                         total = len(p_df)
                         print("Total No. Of Products: {}". format(total))
                         print("Enter the product details:\n")
@@ -75,76 +75,87 @@ while tf.casefold() != 'e':
                         price = input("Price: ")
                         o_price = input("Original Price: ")
                         category = input("Category: ")
-                        #id_no = int(p_df.loc[:, 'id_no']).max()
+                        # id_no = int(p_df.loc[:, 'id_no']).max()
                         print("Adding Product.....")
-                        temp = pd.Series(data={'id_no': total + 1001, 'name': name, 'available': available,
-                                               'price': price, 'original_price': o_price, 'category': category})
-                        p_df = p_df.append(temp, ignore_index=True)
+                        row = total + 1001
+                        temp = pd.Series(data={'name': name, 'available': available, 'price': price,
+                                               'original_price': o_price, 'category': category},
+                                         index=['name', 'available', 'price', 'original_price', 'category'],
+                                         name=row)
+                        # temp.rename(total + 1001)
+                        p_df = p_df.append(temp)
                         print("Product added!")
                         total = len(p_df)
                         print("Total No. Of Products: {}". format(total))
                         print(p_df)
-                        #p_df.to_csv("Product.csv")
+                        # p_df.to_csv("Product.csv")
                         print()
                         print("********************************************")
+                        temp = input("Press 'C' key...")
                     elif choice == 4:
-                        p_df = pd.read_csv("Product.csv")
                         total = len(p_df)
                         print("Total No. Of Products: {}". format(total))
                         id_no = int(input("Enter ID of product to be removed: "))
-                        print(type(p_df.id_no.astype(int)))
-                        # todo Correct This
-                        if id_no in pd.to_numeric(p_df.id_no):
+                        # id_list = list(p_df.loc[:, 'id_no'])
+                        # val = p_df.index[p_df['id_no'] == id_no].tolist()
+                        if id_no in p_df.index:
                             print("Removing product.....")
                             p_df.drop(id_no, axis=0, inplace=True)
                             print("Product removed!")
                             total = len(p_df)
                             print("Total No. Of Products: {}". format(total))
                             print(p_df)
-                            #p_df.to_csv("Product.csv")
+                            # p_df.to_csv("Product.csv")
                         else:
                             print("Oops! Wrong details.")
-
-                    # todo Add ability to only edit an single column
+                        print()
+                        print("********************************************")
+                        temp = input("Press 'C' key...")
                     elif choice == 5:
-                        p_df = pd.read_csv("Product.csv")
+                        col_list = ['Name', 'Available', 'Price', 'Original_Price', 'Category']
                         id_no = int(input("Enter the ID no. of the product to be edited: "))
                         for index2 in p_df.index:
-                            i = p_df.loc[index2, 'id_no']
-                            if p_df.loc[index2, 'id_no'] == id_no:
+                            if index2 == id_no:
+                                print(u_df.loc[index2, :])
                                 print("Enter the edited details: ")
-                                p_df.loc[index2, 'name'] = str(input('Name:'))
-                                p_df.loc[index2, 'available'] = str(input('Available:'))
-                                p_df.loc[index2, 'price'] = str(input('Price:'))
-                                p_df.loc[index2, 'original_price'] = str(input('Original Price:'))
-                                p_df.loc[index2, 'category'] = str(input('Category:'))
+                                for col in col_list:
+                                    p_df.loc[index2, col.casefold()] = str(input('{}: '.format(col)))
+                                    proceed = input("Do you want to continue(Y/N): ").casefold()
+                                    if proceed == 'n':
+                                        break
+                                    elif proceed == 'y':
+                                        continue
+                                    else:
+                                        print("Wrong choice!")
+                                        break
                                 print("Product details edited!")
-                                print(p_df)
-                                #p_df.to_csv("Product.csv")
+                                print(p_df.loc[index2, :])
+                                # p_df.to_csv("Product.csv")
                                 break
                         else:
                             print("Oops! Wrong details.")
                         print()
                         print("********************************************")
+                        temp = input("Press 'C' key...")
                     elif choice == 6:
-                        u_df = pd.read_csv("Customers.csv", index_col=0)
                         print("Displaying customer list....\n")
                         print(u_df)
                         print()
                         print("********************************************")
+                        temp = input("Press 'C' key...")
                     elif choice == 7:
-                        u_df = pd.read_csv("Customers.csv")
-                        for category in sorted(list(set(u_df['type']))):
+                        for category in u_df.type.unique():
                             print(category)
-                        c_choice = str(input("\nEnter your preferred category: "))
+                        c_choice = input("\nEnter your preferred category: ").casefold()
                         print("Displaying customer list from a specific category....\n")
-                        for index6 in u_df.index:
-                            if c_choice.casefold() == u_df.loc[index6, 'type'].casefold():
-                                print(u_df.loc[index6, 'id_no':'latest_order'])
+                        for index2 in u_df.index:
+                            if c_choice == u_df.loc[index2, 'type'].casefold():
+                                print(u_df.loc[index2, :])
+                                print()
                         print()
                         print("********************************************")
+                        temp = input("Press 'C' key...")
                     elif choice == 8:
-                        u_df = pd.read_csv("Customers.csv")
                         total = len(u_df)
                         print("Total No. Of Customers: {}". format(total))
                         print("Enter the customer details:\n")
@@ -162,65 +173,71 @@ while tf.casefold() != 'e':
                         phone2 = input("2nd Phone No.: ")
                         email = input("Email Address: ")
                         web = input("Website(if any): ")
-                        #id_no = u_df["id_no"].max()
+                        # id_no = u_df["id_no"].max()
                         print("Adding customer.....")
-                        temp = pd.Series(data={'id_no': total + 2001, 'type': u_type, 'first_name': first,
-                                               'last_name': last, 'company_name': company, 'address': address,
-                                               'city': city, 'county': district, 'state': state, 'country': country,
-                                               'zip': zipcode, 'phone1': phone1, 'phone2': phone2, 'email': email,
-                                               'web': web})
-                        u_df = u_df.append(temp, ignore_index=True)
+                        row = total + 2001
+                        temp = pd.Series(data={'type': u_type, 'first_name': first, 'last_name': last,
+                                               'company_name': company, 'address': address, 'city': city,
+                                               'county': district, 'state': state, 'country': country, 'zip': zipcode,
+                                               'phone1': phone1, 'phone2': phone2, 'email': email, 'web': web},
+                                         index=['type', 'first_name', 'last_name', 'company_name',
+                                                'address', 'city', 'county', 'state', 'country',
+                                                'zip', 'phone1', 'phone2', 'email', 'web'],
+                                         name=row)
+                        u_df = u_df.append(temp)
                         print("Customer details added!")
                         total = len(u_df)
                         print("Total No. Of Customers: {}". format(total))
                         print(u_df)
-                        #u_df.to_csv("Customers.csv")
+                        # u_df.to_csv("Customers.csv")
                         print()
                         print("********************************************")
+                        temp = input("Press 'C' key...")
                     elif choice == 9:
-                        u_df = pd.read_csv("Customers.csv")
                         total = len(u_df)
                         print("Total No. Of Customers: {}". format(total))
                         id_no = int(input("Enter ID of customer to be removed: "))
-                        print("Removing customer details.....")
-                        u_df.drop(id_no, axis=0, inplace=True)
-                        print("Customer removed!")
-                        total = len(u_df)
-                        print("Total No. Of Customers: {}". format(total))
-                        print(u_df)
-                        #u_df.to_csv("Customers.csv")
+                        if id_no in u_df.index:
+                            print("Removing customer details.....")
+                            u_df.drop(id_no, axis=0, inplace=True)
+                            print("Customer removed!")
+                            total = len(u_df)
+                            print("Total No. Of Customers: {}". format(total))
+                            print(u_df)
+                            # u_df.to_csv("Customers.csv")
+                        else:
+                            print("Oops! Wrong details.")
                         print()
                         print("********************************************")
+                        temp = input("Press 'C' key...")
                     elif choice == 10:
-                        u_df = pd.read_csv("Customers.csv")
-                        id_no = int(input("Enter the ID no. of the customer details to be edited: "))
-                        for index3 in u_df.index:
-                            if u_df.loc[index3, 'id_no'] == id_no:
-                                product = u_df.loc[id_no]
+                        col_list = ['U-type', 'First', 'Last', 'Company', 'Address', 'City', 'County', 'State',
+                                    'Country', 'Zipcode', 'Phone1', 'Phone2', 'Email', 'Web']
+                        id_no = int(input("Enter the ID no. of the product to be edited: "))
+                        for index2 in u_df.index:
+                            if index2 == id_no:
+                                print(u_df.loc[index2, :])
                                 print("Enter the edited details: ")
-                                u_df.loc[index3, 'u_type'] = str(input("Type: "))
-                                u_df.loc[index3, 'first'] = str(input("First name: "))
-                                u_df.loc[index3, 'last'] = str(input("Last name: "))
-                                u_df.loc[index3, 'company'] = str(input("Company name(if any): "))
-                                u_df.loc[index3, 'address'] = str(input("Address: "))
-                                u_df.loc[index3, 'city'] = str(input("City: "))
-                                u_df.loc[index3, 'district'] = str(input("District/County: "))
-                                u_df.loc[index3, 'state'] = str(input("State: "))
-                                u_df.loc[index3, 'country'] = str(input("Country: "))
-                                u_df.loc[index3, 'zipcode'] = str(input("PIN Code: "))
-                                u_df.loc[index3, 'phone1'] = str(input("1st Phone No.: "))
-                                u_df.loc[index3, 'phone2'] = str(input("2nd Phone No.: "))
-                                u_df.loc[index3, 'email'] = str(input("Email Address: "))
-                                u_df.loc[index3, 'web'] = str(input("Website(if any): "))
+                                for col in col_list:
+                                    u_df.loc[index2, col.casefold()] = str(input('{}: '.format(col)))
+                                    proceed = input("Do you want to continue(Y/N): ").casefold()
+                                    if proceed == 'n':
+                                        break
+                                    elif proceed == 'y':
+                                        continue
+                                    else:
+                                        print("Wrong choice!")
+                                        break
                                 print("Customer details edited!")
-                                #u_df.to_csv("Customers.csv")
+                                print(u_df.loc[index2, :])
+                                # u_df.to_csv("Customers.csv")
                                 break
                         else:
                             print("Oops! Wrong details.")
                         print()
                         print("********************************************")
+                        temp = input("Press 'C' key...")
                     elif choice == 11:
-                        p_df = pd.read_csv("Product.csv", index_col=0)
                         print(p_df)
                         print("Plotting the line chart.....")
                         x = p_df['name']
@@ -234,8 +251,8 @@ while tf.casefold() != 'e':
                         plt.show()
                         print()
                         print("********************************************")
+                        temp = input("Press 'C' key...")
                     elif choice == 12:
-                        p_df = pd.read_csv("Product.csv", index_col=0)
                         print(p_df)
                         print("Plotting the bar graph.....")
                         x = p_df['name']
@@ -247,6 +264,7 @@ while tf.casefold() != 'e':
                         plt.show()
                         print()
                         print("********************************************")
+                        temp = input("Press 'C' key...")
                     elif choice == 13:
                         print("Logging Out! Have a good time.")
                         print()
@@ -258,14 +276,13 @@ while tf.casefold() != 'e':
             print("Sorry! You entered the wrong credentials.")
     elif tf.casefold() == 'u':
         u_id = int(input("Enter your id: "))
-        first_name = str(input("Enter your first name: "))
-        for index4 in u_df.index:
-            i = u_df.loc[index4, 'id_no']
-            f = u_df.loc[index4, 'first_name']
-            a = u_df.loc[index4, 'type']
-            if (i == u_id) & (f.casefold() == first_name.casefold()) & (a == 'U'):
+        first_name = str(input("Enter your first name: ")).casefold()
+        for index in u_df.index:
+            first = u_df.loc[index, 'first_name']
+            u_type = u_df.loc[index, 'type']
+            if (index == u_id) & (first.casefold() == first_name) & (u_type.casefold() == tf):
                 print("Login successful!")
-                choice = -5
+                choice = -1
                 while choice != 5:
                     print("******************User Menu******************")
                     print()
@@ -277,13 +294,12 @@ while tf.casefold() != 'e':
                     print("*********************************************")
                     choice = int(input("Enter your choice: "))
                     if choice == 1:
-                        p_df = pd.read_csv("Product.csv", index_col=0)
                         print("Displaying product menu....\n")
                         print(p_df)
                         print()
                         print("********************************************")
+                        temp = input("Press 'C' key...")
                     elif choice == 2:
-                        p_df = pd.read_csv("Product.csv")
                         for category in sorted(set(p_df['category'])):
                             print(category)
                         print("Displaying product menu from a specific category....\n")
@@ -293,39 +309,38 @@ while tf.casefold() != 'e':
                                 print(p_df.loc[index6, 'id_no':'category'])
                         print()
                         print("********************************************")
+                        temp = input("Press 'C' key...")
                     elif choice == 3:
-                        p_df = pd.read_csv("Product.csv")
-                        u_df = pd.read_csv("Customers.csv")
                         id_no = int(input("Enter the product id that you want to purchase: "))
                         for index5 in p_df.index:
                             if p_df.loc[index5, 'id_no'] == id_no:
-                                u_df.loc[index4, 'last_order2'] = u_df.loc[index4, 'last_order1']
-                                u_df.loc[index4, 'last_order1'] = u_df.loc[index4, 'latest_order']
-                                u_df.loc[index4, 'latest_order'] = str("#{}#{}".format(u_id, id_no))
+                                u_df.loc[index, 'last_order2'] = u_df.loc[index, 'last_order1']
+                                u_df.loc[index, 'last_order1'] = u_df.loc[index, 'latest_order']
+                                u_df.loc[index, 'latest_order'] = str("#{}#{}".format(u_id, id_no))
                                 print("Product purchase added to user details!")
                                 print(p_df)
-                                #u_df.to_csv("Customers.csv")
+                                # u_df.to_csv("Customers.csv")
                                 break
                         else:
                             print("Product id not found!")
                         print()
                         print("********************************************")
+                        temp = input("Press 'C' key...")
                     elif choice == 4:
-                        p_df = pd.read_csv("Product.csv")
-                        u_df = pd.read_csv("Customers.csv")
                         id_no = int(input("Enter the product id that you want to cancel: "))
                         for index5 in p_df.index:
                             if p_df.loc[index5, 'id_no'] == id_no:
-                                if str(id_no) in str(u_df.loc[index5, 'latest_order']):
-                                    u_df.loc[index4, 'latest_order'] = ''
+                                if str(id_no) in str(u_df.loc[index, 'latest_order']):
+                                    u_df.loc[index, 'latest_order'] = ''
                                     print("Order cancelled!")
                                     print(p_df)
-                                    #u_df.to_csv("C:\\Users\\user\\Downloads\\Customers.csv")
+                                    # u_df.to_csv("C:\\Users\\user\\Downloads\\Customers.csv")
                                     break
                         else:
                             print("Product id not found!")
                         print()
                         print("********************************************")
+                        temp = input("Press 'C' key...")
                     elif choice == 5:
                         print("Logging Out! Have a good time.")
                         print()
