@@ -22,10 +22,10 @@ while tf.casefold() != 'e':
     if tf.casefold() == 'a':
         u_id = int(input("Enter your id: "))
         first_name = input("Enter your first name: ").casefold()
-        for index1 in u_df.index:
-            first = u_df.loc[index1, 'first_name'].casefold()
-            u_type = u_df.loc[index1, 'type'].casefold()
-            if (index1 == u_id) & (first == first_name) & (u_type == tf):
+        for index in u_df.index:
+            first = u_df.loc[index, 'first_name'].casefold()
+            u_type = u_df.loc[index, 'type'].casefold()
+            if (index == u_id) & (first == first_name) & (u_type == tf):
                 print("Login successful!")
                 choice = -1
                 while choice != 13:
@@ -75,7 +75,6 @@ while tf.casefold() != 'e':
                         price = input("Price: ")
                         o_price = input("Original Price: ")
                         category = input("Category: ")
-                        # id_no = int(p_df.loc[:, 'id_no']).max()
                         print("Adding Product.....")
                         row = total + 1001
                         temp = pd.Series(data={'name': name, 'available': available, 'price': price,
@@ -96,12 +95,14 @@ while tf.casefold() != 'e':
                         total = len(p_df)
                         print("Total No. Of Products: {}". format(total))
                         id_no = int(input("Enter ID of product to be removed: "))
-                        # id_list = list(p_df.loc[:, 'id_no'])
-                        # val = p_df.index[p_df['id_no'] == id_no].tolist()
                         if id_no in p_df.index:
                             print("Removing product.....")
                             p_df.drop(id_no, axis=0, inplace=True)
                             print("Product removed!")
+                            for old_id in p_df.index:
+                                if old_id > id_no:
+                                    new_id = old_id - 1
+                                    p_df.rename(index={old_id: new_id}, inplace=True)
                             total = len(p_df)
                             print("Total No. Of Products: {}". format(total))
                             print(p_df)
@@ -116,7 +117,7 @@ while tf.casefold() != 'e':
                         id_no = int(input("Enter the ID no. of the product to be edited: "))
                         for index2 in p_df.index:
                             if index2 == id_no:
-                                print(u_df.loc[index2, :])
+                                print(p_df.loc[index2, :])
                                 print("Enter the edited details: ")
                                 for col in col_list:
                                     p_df.loc[index2, col.casefold()] = str(input('{}: '.format(col)))
@@ -201,6 +202,10 @@ while tf.casefold() != 'e':
                             print("Removing customer details.....")
                             u_df.drop(id_no, axis=0, inplace=True)
                             print("Customer removed!")
+                            for old_id in u_df.index:
+                                if old_id > id_no:
+                                    new_id = old_id - 1
+                                    u_df.rename(index={old_id: new_id}, inplace=True)
                             total = len(u_df)
                             print("Total No. Of Customers: {}". format(total))
                             print(u_df)
@@ -211,7 +216,7 @@ while tf.casefold() != 'e':
                         print("********************************************")
                         temp = input("Press 'C' key...")
                     elif choice == 10:
-                        col_list = ['U-type', 'First', 'Last', 'Company', 'Address', 'City', 'County', 'State',
+                        col_list = ['Type', 'First', 'Last', 'Company', 'Address', 'City', 'County', 'State',
                                     'Country', 'Zipcode', 'Phone1', 'Phone2', 'Email', 'Web']
                         id_no = int(input("Enter the ID no. of the product to be edited: "))
                         for index2 in u_df.index:
@@ -300,44 +305,46 @@ while tf.casefold() != 'e':
                         print("********************************************")
                         temp = input("Press 'C' key...")
                     elif choice == 2:
-                        for category in sorted(set(p_df['category'])):
+                        for category in p_df.category.unique():
                             print(category)
                         print("Displaying product menu from a specific category....\n")
-                        c_choice = str(input("\nEnter your preferred category: "))
-                        for index6 in p_df.index:
-                            if c_choice.casefold() == p_df.loc[index6, 'category'].casefold():
-                                print(p_df.loc[index6, 'id_no':'category'])
+                        c_choice = input("\nEnter your preferred category: ").casefold()
+                        for index2 in p_df.index:
+                            if c_choice == p_df.loc[index2, 'category'].casefold():
+                                print(p_df.loc[index2, :])
                         print()
                         print("********************************************")
                         temp = input("Press 'C' key...")
                     elif choice == 3:
                         id_no = int(input("Enter the product id that you want to purchase: "))
-                        for index5 in p_df.index:
-                            if p_df.loc[index5, 'id_no'] == id_no:
+                        for index2 in p_df.index:
+                            if (index2 == id_no) & (p_df.loc[index2, 'available'] > 0):
+                                p_df.loc[index2, 'available'] -= 1
                                 u_df.loc[index, 'last_order2'] = u_df.loc[index, 'last_order1']
                                 u_df.loc[index, 'last_order1'] = u_df.loc[index, 'latest_order']
                                 u_df.loc[index, 'latest_order'] = str("#{}#{}".format(u_id, id_no))
                                 print("Product purchase added to user details!")
-                                print(p_df)
+                                print(u_df.loc[index, :])
                                 # u_df.to_csv("Customers.csv")
                                 break
                         else:
-                            print("Product id not found!")
+                            print("Product id not found or stock empty for the chosen product!")
                         print()
                         print("********************************************")
                         temp = input("Press 'C' key...")
                     elif choice == 4:
                         id_no = int(input("Enter the product id that you want to cancel: "))
-                        for index5 in p_df.index:
-                            if p_df.loc[index5, 'id_no'] == id_no:
+                        for index2 in p_df.index:
+                            if index2 == id_no:
                                 if str(id_no) in str(u_df.loc[index, 'latest_order']):
+                                    p_df.loc[index2, 'available'] += 1
                                     u_df.loc[index, 'latest_order'] = ''
                                     print("Order cancelled!")
-                                    print(p_df)
+                                    print(p_df.loc[index, :])
                                     # u_df.to_csv("C:\\Users\\user\\Downloads\\Customers.csv")
                                     break
                         else:
-                            print("Product id not found!")
+                            print("Product id not found or !")
                         print()
                         print("********************************************")
                         temp = input("Press 'C' key...")
