@@ -119,7 +119,7 @@ while tf.casefold() != 'e':
                                 print(p_df.loc[index2, :])
                                 print("Enter the edited details: ")
                                 for col in col_list:
-                                    p_df.loc[index2, col.casefold()] = str(input('{}: '.format(col)))
+                                    p_df.loc[index2, col.casefold()] = input('{}: '.format(col))
                                     proceed = input("Do you want to continue(Y/N): ").casefold()
                                     if proceed == 'n':
                                         break
@@ -222,7 +222,7 @@ while tf.casefold() != 'e':
                                 print(u_df.loc[index2, :])
                                 print("Enter the edited details: ")
                                 for col in col_list:
-                                    u_df.loc[index2, col.casefold()] = str(input('{}: '.format(col)))
+                                    u_df.loc[index2, col.casefold()] = input('{}: '.format(col))
                                     proceed = input("Do you want to continue(Y/N): ").casefold()
                                     if proceed == 'n':
                                         break
@@ -279,11 +279,11 @@ while tf.casefold() != 'e':
             print("Sorry! You entered the wrong credentials.")
     elif tf.casefold() == 'u':
         u_id = int(input("Enter your id: "))
-        first_name = str(input("Enter your first name: ")).casefold()
+        first_name = input("Enter your first name: ").casefold()
         for index in u_df.index:
-            first = u_df.loc[index, 'first_name']
-            u_type = u_df.loc[index, 'type']
-            if (index == u_id) & (first.casefold() == first_name) & (u_type.casefold() == tf):
+            first = u_df.loc[index, 'first_name'].casefold()
+            u_type = u_df.loc[index, 'type'].casefold()
+            if (index == u_id) & (first == first_name) & (u_type == tf):
                 print("Login successful!")
                 choice = -1
                 while choice != 5:
@@ -305,10 +305,11 @@ while tf.casefold() != 'e':
                     elif choice == 2:
                         for category in p_df.category.unique():
                             print(category)
-                        print("Displaying product menu from a specific category....\n")
                         c_choice = input("\nEnter your preferred category: ").casefold()
+                        print("Displaying product menu from a specific category....\n")
                         for index2 in p_df.index:
                             if c_choice == p_df.loc[index2, 'category'].casefold():
+                                print()
                                 print(p_df.loc[index2, :])
                         print()
                         print("********************************************")
@@ -318,8 +319,9 @@ while tf.casefold() != 'e':
                         for index2 in p_df.index:
                             if (index2 == id_no) & (p_df.loc[index2, 'available'] > 0):
                                 p_df.loc[index2, 'available'] -= 1
-                                u_df.loc[index, 'last_order2'] = u_df.loc[index, 'last_order1']
-                                u_df.loc[index, 'last_order1'] = u_df.loc[index, 'latest_order']
+                                if u_df.loc[index, 'latest_order'] != '':
+                                    u_df.loc[index, 'last_order2'] = u_df.loc[index, 'last_order1']
+                                    u_df.loc[index, 'last_order1'] = u_df.loc[index, 'latest_order']
                                 u_df.loc[index, 'latest_order'] = str("#{}#{}".format(u_id, id_no))
                                 print("Product purchase added to user details!")
                                 print(u_df.loc[index, :])
